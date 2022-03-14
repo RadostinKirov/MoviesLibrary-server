@@ -1,5 +1,5 @@
 const express = require('express');
-const routesConfig = require('./config/routes');
+const routesConfig = require('./Controller/movieController');
 
 start();
 
