@@ -1,12 +1,26 @@
 const Movie = require('../models/Movie');
 
-async function createMovi(dataMovie) {
+
+async function getAllRatings() {
+    console.log('inService');
+    const movies = await Movie.find({}).lean();
+
+    return movies
+
+}
+
+async function createMovie(movieInfo) {
     try {
-        console.log(dataMovie)
-        const movie = new Movie(dataMovie);
+        console.log(movieInfo)
+        const movie = new Movie(movieInfo);
         await movie.save();
         return movie;
     } catch (err) {
         throw new Error(err);
     }
 }
+
+module.exports = {
+    getAllRatings,
+    createMovie,
+};
