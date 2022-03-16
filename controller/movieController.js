@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
-const storageMMiddleware = require('../middleware/storage')
+const storageMMiddleware = require('../middleware/storage');
+
 
 
 module.exports = (app) => {
@@ -57,10 +58,13 @@ module.exports = (app) => {
         const movieInfo = req.body;
         try {
             const allRatings = await req.storage.getAllRatings();
-            const movieExist = allRatings.find(x => x.id == movieInfo.id);
+            const movieExist = allRatings.find(x => x._id == movieInfo._id);
 
             if (movieExist) {
-                console.log('Movie exist!');
+            //    console.log('...body - ', req.body)
+                const movie = await req.storage.editReviewByMovieId(req.body);
+         
+                res.status(200).send(movie);
             } else {
                 const movie = await req.storage.createMovie(movieInfo);
                 res.status(200).send(movieInfo);
@@ -75,12 +79,12 @@ module.exports = (app) => {
         const id = req.params.id;
         let rating = 0;
 
-        console.log(id)
+        console.log(req)
         try {
             console.log('ratings entered')
             await req.storage.getAllRatings()
                 .then(res => {
-                    const movieExist = res.find(x => x.id == id);
+                    const movieExist = res.find(x => x._id == id);
 
                     if (movieExist) {
                         console.log('movieExist -> ', movieExist)
