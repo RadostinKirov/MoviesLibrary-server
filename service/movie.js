@@ -1,19 +1,16 @@
-
 const Movie = require('../models/Movie');
 
-
-async function getAllRatings() {
-    console.log('inService');
+async function getAllReviews() {
     const movies = await Movie.find({}).lean();
-
     return movies
 
 }
 
 async function createMovie(movieInfo) {
     try {
-        console.log(movieInfo)
         const movie = new Movie(movieInfo);
+        !movieInfo.rating ? movie.rating = 0 : "";
+        !movieInfo.comment ? movie.comment = "" : "";
         await movie.save();
         return movie;
     } catch (err) {
@@ -28,14 +25,21 @@ async function getMovieById(movieInfo) {
 
 async function editReviewByMovieId(movieInfo) {
     try {
-        
-        let movie = await Movie.findById(movieInfo._id);
-        movie.rating ? movie.rating = movieInfo.rating : '';
-        movie.comment ? movie.comment = movieInfo.comment : '';
-        return movie.save();
-       
-    }
 
+        let movie = await Movie.findById(movieInfo._id);
+
+        if (movie.rating) {
+            console.log('has rating')
+            movie.rating = movieInfo.rating;
+        }
+        if (movie.comment) {
+            console.log('has comment')
+            movie.comment = movieInfo.comment;
+        }
+
+        return movie.save();
+
+    }
 
     catch (err) {
         console.log(err)
@@ -43,7 +47,7 @@ async function editReviewByMovieId(movieInfo) {
 }
 
 module.exports = {
-    getAllRatings,
+    getAllReviews,
     createMovie,
     getMovieById,
     editReviewByMovieId

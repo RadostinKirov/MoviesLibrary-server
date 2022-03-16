@@ -9,7 +9,6 @@ async function start() {
     routesConfig(app);
     await dataBaseConfig(app);
 
-
     app.get('/', (req, res) => res.send('It works!'));
     
     app.listen(PORT, () => {

@@ -8,7 +8,6 @@ module.exports = (app) => {
     app.use(storageMMiddleware());
     app.use((req, res, next) => {
         res.append('Access-Control-Allow-Origin', '*')
-            // .append('Access-Control-Allow-Credentials', true)
             .append('Access-Control-Allow-Headers', '*')
             .append('Access-Control-Allow-Headers', 'content-type')
 
@@ -54,16 +53,14 @@ module.exports = (app) => {
     })
 
     app.post('/rating', async (req, res) => {
-        console.log('rating request received!');
+
         const movieInfo = req.body;
         try {
-            const allRatings = await req.storage.getAllRatings();
+            const allRatings = await req.storage.getAllReviews();
             const movieExist = allRatings.find(x => x._id == movieInfo._id);
 
             if (movieExist) {
-            //    console.log('...body - ', req.body)
                 const movie = await req.storage.editReviewByMovieId(req.body);
-         
                 res.status(200).send(movie);
             } else {
                 const movie = await req.storage.createMovie(movieInfo);
@@ -75,36 +72,49 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/ratingById/:id', async (req, res) => {
+    app.get('/reviewById/:id', async (req, res) => {
         const id = req.params.id;
-        let rating = 0;
+        let movieExist = null;
 
-        console.log(req)
         try {
-            console.log('ratings entered')
-            await req.storage.getAllRatings()
+            await req.storage.getAllReviews()
                 .then(res => {
-                    const movieExist = res.find(x => x._id == id);
-
+                    movieExist = res.find(x => x._id == id);
                     if (movieExist) {
-                        console.log('movieExist -> ', movieExist)
-                        rating = movieExist.rating;
-                        console.log(rating);
-                        console.log('check');
-
                     } else {
-                        rating = 0;
+                        movieExist = null;
                     }
-               
                 })
-                res.status(200).send(rating.toString());
+            movieExist ? '' : movieExist = '0';
+            res.status(200).send(movieExist);
 
         } catch (err) {
             console.log(err)
-            console.log('check3')
-
         }
 
+    });
+
+    app.post('/comment', async (req, res) => {
+        const movieInfo = req.body;
+        console.log('/comment entred')
+        try {
+            const allReviews = await req.storage.getAllReviews();
+            const movieExist = allReviews.find(x => x._id == movieInfo._id);
+            console.log('all reviews -> ', allReviews)
+            console.log('movie exist -> ', movieExist)
+            if (movieExist) {
+
+                const movie = await req.storage.editReviewByMovieId(req.body);
+                console.log('movie result -> ', movie)
+                res.status(200).send(movie);
+            } else {
+                const movie = await req.storage.createMovie(movieInfo);
+                res.status(200).send(movieInfo);
+            }
+
+        } catch (err) {
+            console.log(err)
+        }
     })
 
 }
